@@ -70,7 +70,7 @@ class TikiSpider(scrapy.Spider):
         dfseller.to_json(seller_file_path, orient="values")
 
         dfproduct = pandas.DataFrame(self.products)
-        product_file_path = 'products.json'
+        product_file_path = 'products_tiki.json'
         print(len(self.products))
         dfproduct.to_json(product_file_path, orient="records")
 

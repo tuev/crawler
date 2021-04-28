@@ -6,11 +6,18 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+from shutil import which
 
 BOT_NAME = 'tutorialScrapy'
 
 SPIDER_MODULES = ['tutorialScrapy.spiders']
 NEWSPIDER_MODULE = 'tutorialScrapy.spiders'
+
+
+SELENIUM_DRIVER_NAME = 'firefox'
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+# '--headless' if using chrome instead of firefox
+SELENIUM_DRIVER_ARGUMENTS = ['-headless']
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -63,28 +70,32 @@ CONCURRENT_REQUESTS_PER_IP = 10
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,
-    'scrapy_rotated_proxy.downloadmiddlewares.proxy.RotatedProxyMiddleware': 750,
+    # 'myproject.middlewares.CustomDownloaderMiddleware': 543,
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy_selenium.SeleniumMiddleware': 800,
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
 }
 
 # When set PROXY_FILE_PATH='', scrapy-rotated-proxy
 # will use proxy in Spider Settings default.
-PROXY_FILE_PATH = ''
-HTTP_PROXIES = [
-    'http://proxy0:8888',
-    'http://user:pass@proxy1:8888',
-    'https://user:pass@proxy1:8888',
-]
-HTTPS_PROXIES = [
-    'http://proxy0:8888',
-    'http://user:pass@proxy1:8888',
-    'https://user:pass@proxy1:8888',
-]
+# PROXY_FILE_PATH = ''
+# HTTP_PROXIES = [
+#     'http://proxy0:8888',
+#     'http://user:pass@proxy1:8888',
+#     'https://user:pass@proxy1:8888',
+# ]
+# HTTPS_PROXIES = [
+#     'http://proxy0:8888',
+#     'http://user:pass@proxy1:8888',
+#     'https://user:pass@proxy1:8888',
+# ]
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 # EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
+#     'scrapy.extensions.httpcache.RFC2616Policy': 500,
 # }
 
 # Configure item pipelines
@@ -112,4 +123,12 @@ HTTPS_PROXIES = [
 #HTTPCACHE_EXPIRATION_SECS = 0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+# HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+HTTPCACHE_POLICY = 'scrapy.extensions.httpcache.RFC2616Policy'
+
+SPLASH_URL = 'http://192.168.59.103:8050'
+
+SPIDER_MIDDLEWARES = {
+    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
+DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
